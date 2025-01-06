@@ -1,0 +1,92 @@
+{
+ "actions": [],
+ "autoname": "format:WA-CONV-{#####}",
+ "creation": "2024-12-24 12:03:03.823971",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "recipient",
+  "assigned_user",
+  "column_break_kiew",
+  "status",
+  "conversation_id",
+  "section_break_hecn",
+  "last_message",
+  "last_message_time"
+ ],
+ "fields": [
+  {
+   "fieldname": "assigned_user",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Assigned User",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_kiew",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Open\nClosed"
+  },
+  {
+   "fieldname": "section_break_hecn",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "last_message",
+   "fieldtype": "Text",
+   "label": "Last Message",
+   "read_only": 1
+  },
+  {
+   "fieldname": "last_message_time",
+   "fieldtype": "Datetime",
+   "label": "Last Message Time",
+   "read_only": 1
+  },
+  {
+   "fieldname": "recipient",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Recipient",
+   "options": "WhatsApp Recipient",
+   "reqd": 1
+  },
+  {
+   "fieldname": "conversation_id",
+   "fieldtype": "Data",
+   "label": "Conversation Id"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-12-24 14:07:04.291799",
+ "modified_by": "Administrator",
+ "module": "Whatsapp Management",
+ "name": "WhatsApp Conversation",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "recipient"
+}

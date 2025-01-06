@@ -1,0 +1,79 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-12-24 14:11:34.982798",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "ultramsg_settings_section",
+  "instance_id",
+  "column_break_btrv",
+  "token",
+  "section_break_ypbg",
+  "sync_groups",
+  "sync_chats"
+ ],
+ "fields": [
+  {
+   "description": "UlraMsg apis are being used in WhatsApp Communication, please create an account at: https://ultramsg.com",
+   "fieldname": "ultramsg_settings_section",
+   "fieldtype": "Section Break",
+   "label": "UltraMsg Settings"
+  },
+  {
+   "fieldname": "instance_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Instance Id",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_btrv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "token",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Token",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_ypbg",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "sync_groups",
+   "fieldtype": "Button",
+   "label": "Sync Groups"
+  },
+  {
+   "fieldname": "sync_chats",
+   "fieldtype": "Button",
+   "label": "Sync Chats"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2024-12-24 14:36:10.933896",
+ "modified_by": "Administrator",
+ "module": "Whatsapp Management",
+ "name": "WhatsApp Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

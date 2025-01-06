@@ -1,0 +1,107 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-12-24 12:12:19.150065",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "conversation",
+  "whatsapp_group",
+  "column_break_cezv",
+  "sender",
+  "recipient",
+  "user",
+  "section_break_vbfa",
+  "message_content",
+  "media_url",
+  "timestamp"
+ ],
+ "fields": [
+  {
+   "fieldname": "conversation",
+   "fieldtype": "Link",
+   "label": "Conversation",
+   "options": "WhatsApp Conversation"
+  },
+  {
+   "fieldname": "whatsapp_group",
+   "fieldtype": "Link",
+   "label": "WhatsApp Group",
+   "options": "WhatsApp Group"
+  },
+  {
+   "fieldname": "column_break_cezv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sender",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Sender",
+   "options": "Recipient\nUser",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_vbfa",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "message_content",
+   "fieldtype": "Text",
+   "in_list_view": 1,
+   "label": "Message Content",
+   "reqd": 1
+  },
+  {
+   "fieldname": "media_url",
+   "fieldtype": "Data",
+   "label": "Media URL"
+  },
+  {
+   "fieldname": "timestamp",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Timestamp",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.sender == 'User'",
+   "description": "User who sent the message if sender is a User",
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "User",
+   "options": "User"
+  },
+  {
+   "description": "Recipient who sent the message if sender is a Recipient",
+   "fieldname": "recipient",
+   "fieldtype": "Link",
+   "label": "Recipient",
+   "options": "WhatsApp Recipient"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-12-24 13:59:15.557279",
+ "modified_by": "Administrator",
+ "module": "Whatsapp Management",
+ "name": "WhatsApp Message",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
