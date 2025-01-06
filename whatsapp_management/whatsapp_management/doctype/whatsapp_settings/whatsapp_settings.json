@@ -6,6 +6,7 @@
  "engine": "InnoDB",
  "field_order": [
   "ultramsg_settings_section",
+  "api_url",
   "instance_id",
   "column_break_btrv",
   "token",
@@ -51,12 +52,18 @@
    "fieldname": "sync_chats",
    "fieldtype": "Button",
    "label": "Sync Chats"
+  },
+  {
+   "fieldname": "api_url",
+   "fieldtype": "Data",
+   "label": "API URL",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-12-24 14:36:10.933896",
+ "modified": "2025-01-06 18:05:20.454362",
  "modified_by": "Administrator",
  "module": "Whatsapp Management",
  "name": "WhatsApp Settings",

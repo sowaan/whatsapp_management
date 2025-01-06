@@ -2,11 +2,12 @@ import requests
 import frappe
 
 wa_settings = frappe.get_doc("WhatsApp Settings")
+ULTRAMSG_API = wa_settings.api_url
 ULTRAMSG_INSTANCE = wa_settings.instance_id
 ULTRAMSG_TOKEN = wa_settings.token
 
 def send_message(to, message):
-    url = f"https://api.ultramsg.com/{ULTRAMSG_INSTANCE}/messages/chat"
+    url = f"{ULTRAMSG_API}/{ULTRAMSG_INSTANCE}/messages/chat"
     payload = {
         "token": ULTRAMSG_TOKEN,
         "to": to,
@@ -23,7 +24,7 @@ def handle_private_message():
 
 @frappe.whitelist()
 def sync_groups():
-    url = f"https://api.ultramsg.com/{ULTRAMSG_INSTANCE}/groups"
+    url = f"{ULTRAMSG_API}/{ULTRAMSG_INSTANCE}/groups"
     querystring = {
         "token": ULTRAMSG_TOKEN
     }
