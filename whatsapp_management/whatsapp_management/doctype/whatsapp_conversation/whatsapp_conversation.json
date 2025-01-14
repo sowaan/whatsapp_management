@@ -20,8 +20,7 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Assigned User",
-   "options": "User",
-   "reqd": 1
+   "options": "User"
   },
   {
    "fieldname": "column_break_kiew",
@@ -65,7 +64,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-24 14:07:04.291799",
+ "modified": "2025-01-07 15:29:26.394705",
  "modified_by": "Administrator",
  "module": "Whatsapp Management",
  "name": "WhatsApp Conversation",

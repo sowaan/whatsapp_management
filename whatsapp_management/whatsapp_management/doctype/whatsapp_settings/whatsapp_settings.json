@@ -11,12 +11,12 @@
   "column_break_btrv",
   "token",
   "section_break_ypbg",
-  "sync_groups",
-  "sync_chats"
+  "sync_conversations",
+  "delete_conversations"
  ],
  "fields": [
   {
-   "description": "UlraMsg apis are being used in WhatsApp Communication, please create an account at: https://ultramsg.com",
+   "description": "UltraMsg apis are being used in WhatsApp Communication, please create an account at: https://ultramsg.com",
    "fieldname": "ultramsg_settings_section",
    "fieldtype": "Section Break",
    "label": "UltraMsg Settings"
@@ -44,26 +44,26 @@
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "sync_groups",
-   "fieldtype": "Button",
-   "label": "Sync Groups"
-  },
-  {
-   "fieldname": "sync_chats",
-   "fieldtype": "Button",
-   "label": "Sync Chats"
-  },
-  {
    "fieldname": "api_url",
    "fieldtype": "Data",
    "label": "API URL",
    "reqd": 1
+  },
+  {
+   "fieldname": "sync_conversations",
+   "fieldtype": "Button",
+   "label": "Sync Conversations"
+  },
+  {
+   "fieldname": "delete_conversations",
+   "fieldtype": "Button",
+   "label": "Delete Conversations"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-01-06 18:05:20.454362",
+ "modified": "2025-01-08 21:36:41.345852",
  "modified_by": "Administrator",
  "module": "Whatsapp Management",
  "name": "WhatsApp Settings",

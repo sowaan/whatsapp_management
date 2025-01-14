@@ -6,7 +6,10 @@
  "engine": "InnoDB",
  "field_order": [
   "conversation",
+  "conversation_name",
   "whatsapp_group",
+  "group_name",
+  "message_author",
   "column_break_cezv",
   "sender",
   "recipient",
@@ -21,13 +24,15 @@
    "fieldname": "conversation",
    "fieldtype": "Link",
    "label": "Conversation",
-   "options": "WhatsApp Conversation"
+   "options": "WhatsApp Conversation",
+   "read_only": 1
   },
   {
    "fieldname": "whatsapp_group",
    "fieldtype": "Link",
    "label": "WhatsApp Group",
-   "options": "WhatsApp Group"
+   "options": "WhatsApp Group",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_cezv",
@@ -49,8 +54,7 @@
    "fieldname": "message_content",
    "fieldtype": "Text",
    "in_list_view": 1,
-   "label": "Message Content",
-   "reqd": 1
+   "label": "Message Content"
   },
   {
    "fieldname": "media_url",
@@ -73,16 +77,38 @@
    "options": "User"
   },
   {
+   "depends_on": "eval:doc.sender == 'Recipient'",
    "description": "Recipient who sent the message if sender is a Recipient",
    "fieldname": "recipient",
    "fieldtype": "Link",
    "label": "Recipient",
    "options": "WhatsApp Recipient"
+  },
+  {
+   "fetch_from": "conversation.recipient",
+   "fieldname": "conversation_name",
+   "fieldtype": "Link",
+   "label": "Conversation Name",
+   "options": "WhatsApp Recipient",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "whatsapp_group.group_name",
+   "fieldname": "group_name",
+   "fieldtype": "Data",
+   "label": "Group Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "message_author",
+   "fieldtype": "Data",
+   "label": "Message Author",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-24 13:59:15.557279",
+ "modified": "2025-01-13 18:30:09.387872",
  "modified_by": "Administrator",
  "module": "Whatsapp Management",
  "name": "WhatsApp Message",
