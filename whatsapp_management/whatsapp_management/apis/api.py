@@ -13,6 +13,18 @@ TIMEZONE = frappe.db.get_single_value('System Settings', 'time_zone')
 
 
 
+
+@frappe.whitelist()
+def get_user_info():
+    user = frappe.db.exists("User", frappe.session.user)
+    if not user:
+        raise Exception("You are not allowed to login")
+    data = ""
+    data["user"] = frappe.get_doc("User", user)
+    return data
+
+
+
 @frappe.whitelist(allow_guest=True)
 def sent_message(data):
     # print("Data", data)
@@ -41,8 +53,10 @@ def sync_conversations():
         "token": ULTRAMSG_TOKEN
     }
     
+    
     headers = {'content-type': 'application/x-www-form-urlencoded'}
     response = requests.request("GET", url, headers=headers, params=querystring)
+    # print(response.text)
     for record in response.json():
         if record.get("isGroup"):
             group_id = record.get("id")
@@ -60,6 +74,7 @@ def sync_conversations():
                     formatted_number = f'+{parsed_number.country_code}-{parsed_number.national_number}'
                     create_recipient(recipient_id, recipient_name, formatted_number)
                     create_conversation(recipient_id, recipient_name)
+    return response.json()
 
 
 
@@ -86,6 +101,7 @@ def sync_conver(conversation_id, name):
             if sender == "Recipient":
                 rec = frappe.db.get_value('WhatsApp Recipient', {'recipient_id': r.get("from")}, 'recipient_name') or None
             create_message(conversation=name, body=body, readable_time=readable_time, sender=sender, rec=rec)
+    return response.json()
 
 
 
@@ -123,6 +139,8 @@ def sync_grp(group_id, name):
                         rec = frappe.db.get_value('WhatsApp Recipient', {'recipient_id': recipient_id}, 'recipient_name')
 
             create_message(whatsapp_group=name, body=body, readable_time=readable_time, sender=sender, rec=rec)
+    return response.json()
+
 
 
 
@@ -260,6 +278,7 @@ def create_message(conversation = None, whatsapp_group = None, body = None, read
     })
     doc.flags.ignore_permissions = True
     doc.insert()
+    return doc
 
 def get_conver_name(id):
     url = f"{ULTRAMSG_API}/{ULTRAMSG_INSTANCE}/contacts/contact"
