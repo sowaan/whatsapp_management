@@ -19,7 +19,7 @@ def get_user_info():
     user = frappe.db.exists("User", frappe.session.user)
     if not user:
         raise Exception("You are not allowed to login")
-    data = ""
+    data = {}
     data["user"] = frappe.get_doc("User", user)
     return data
 
