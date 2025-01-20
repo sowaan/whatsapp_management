@@ -12,13 +12,11 @@ frappe.ui.form.on("WhatsApp Settings", {
 			method: "whatsapp_management.whatsapp_management.apis.api.sync_conversations",
 			callback: function(r) {
 				console.log(r);
+				frappe.msgprint(__('Conversations synced successfully.'));
 			},
-			freeze: true,	
-			freeze_message: __('Syncing conversations...')
+			enqueue: true
 		});
-		
     },
-	
     delete_conversations(frm){
 		frappe.confirm(
 			'Are you sure you want to delete the conversations?',
@@ -27,9 +25,9 @@ frappe.ui.form.on("WhatsApp Settings", {
 					method: "whatsapp_management.whatsapp_management.apis.api.delete_conversations",
 					callback: function(r) {
 						console.log(r);
+						frappe.msgprint(__('Conversations deleted successfully.'));
 					},
-					freeze: true,  
-					freeze_message: __('Deleting conversations...')
+					enqueue: true
 				});
 			},
 			function() {

@@ -10,10 +10,6 @@ ULTRAMSG_INSTANCE = wa_settings.instance_id
 ULTRAMSG_TOKEN = wa_settings.token
 TIMEZONE = frappe.db.get_single_value('System Settings', 'time_zone')
 
-
-
-
-
 @frappe.whitelist()
 def get_user_info():
     user = frappe.db.exists("User", frappe.session.user)
@@ -23,11 +19,8 @@ def get_user_info():
     data["user"] = frappe.get_doc("User", user)
     return data
 
-
-
 @frappe.whitelist(allow_guest=True)
 def sent_message(data):
-    # print("Data", data)
     data = frappe.parse_json(data)
     url = f"{ULTRAMSG_API}/{ULTRAMSG_INSTANCE}/messages/chat"
     headers = {'content-type': 'application/x-www-form-urlencoded'}
@@ -41,28 +34,23 @@ def sent_message(data):
     response = requests.request("POST", url, headers=headers, data=payload)
     return response.json()
 
-
-
-
-
-
 @frappe.whitelist()
 def sync_conversations():
     url = f"{ULTRAMSG_API}/{ULTRAMSG_INSTANCE}/chats"
     querystring = {
         "token": ULTRAMSG_TOKEN
     }
-    
-    
     headers = {'content-type': 'application/x-www-form-urlencoded'}
     response = requests.request("GET", url, headers=headers, params=querystring)
-    # print(response.text)
     for record in response.json():
+        print('chalo')
+        profile = get_profile_photo(record.get("id"))
+        pro_photo = profile.get("success")
         if record.get("isGroup"):
             group_id = record.get("id")
             group_name = record.get("name")
             if group_name:
-                create_group(group_id, group_name)
+                create_group(group_id, group_name, pro_photo)
         elif not record.get("isGroup"):
             recipient_id = record.get("id")
             recipient_name = record.get("name")
@@ -72,25 +60,19 @@ def sync_conversations():
                 if is_valid_number(num):
                     parsed_number = phonenumbers.parse(num, None)
                     formatted_number = f'+{parsed_number.country_code}-{parsed_number.national_number}'
-                    create_recipient(recipient_id, recipient_name, formatted_number)
+                    create_recipient(recipient_id, recipient_name, formatted_number, pro_photo)
                     create_conversation(recipient_id, recipient_name)
-    return response.json()
-
-
-
-
+    print("Synced Conversations")
 
 @frappe.whitelist()
 def sync_conver(conversation_id, name):
     url = f"{ULTRAMSG_API}/{ULTRAMSG_INSTANCE}/chats/messages"
     headers = {'content-type': 'application/x-www-form-urlencoded'}
-    
     querystring = {
         "token": ULTRAMSG_TOKEN,
         "chatId": conversation_id
     }
     response = requests.request("GET", url, headers=headers, params=querystring)
-    # print(response.text)
     for r in response.json():
         body = r.get("body")
         if body:
@@ -99,20 +81,14 @@ def sync_conver(conversation_id, name):
             sender = "User" if r.get("fromMe") else "Recipient"
             rec = None
             if sender == "Recipient":
-                rec = frappe.db.get_value('WhatsApp Recipient', {'recipient_id': r.get("from")}, 'recipient_name') or None
+                rec = frappe.db.get_value('WhatsApp Recipient', {'id': r.get("from")}, 'id') or None
             create_message(conversation=name, body=body, readable_time=readable_time, sender=sender, rec=rec)
     return response.json()
-
-
-
-
-
 
 @frappe.whitelist()
 def sync_grp(group_id, name):
     url = f"{ULTRAMSG_API}/{ULTRAMSG_INSTANCE}/chats/messages"
     headers = {'content-type': 'application/x-www-form-urlencoded'}
-    
     querystring = {
         "token": ULTRAMSG_TOKEN,
         "chatId": group_id
@@ -127,7 +103,7 @@ def sync_grp(group_id, name):
             recipient_id = r.get("author")
             rec = None
             if sender == "Recipient":
-                rec = frappe.db.get_value('WhatsApp Recipient', {'recipient_id': recipient_id}, 'recipient_name') or None
+                rec = frappe.db.get_value('WhatsApp Recipient', {'id': recipient_id}, 'id') or None
                 if not rec:
                     recipient_number = recipient_id.split("@")[0]
                     num = '+' + recipient_number
@@ -136,16 +112,9 @@ def sync_grp(group_id, name):
                         formatted_number = f'+{parsed_number.country_code}-{parsed_number.national_number}'
                         no = f'+{parsed_number.country_code}{parsed_number.national_number}'
                         create_recipient(recipient_id, no, formatted_number)
-                        rec = frappe.db.get_value('WhatsApp Recipient', {'recipient_id': recipient_id}, 'recipient_name')
-
-            create_message(whatsapp_group=name, body=body, readable_time=readable_time, sender=sender, rec=rec)
+                        rec = frappe.db.get_value('WhatsApp Recipient', {'id': recipient_id}, 'id')
+            create_message(whatsapp_group=name, body=body, readable_time=readable_time, sender=sender, rec=rec, author=recipient_id)
     return response.json()
-
-
-
-
-
-
 
 @frappe.whitelist()
 def delete_conversations():
@@ -153,14 +122,8 @@ def delete_conversations():
     frappe.db.sql("DELETE FROM `tabWhatsApp Group`")
     frappe.db.commit()
 
-
-
-
-
-
 @frappe.whitelist(allow_guest=True)
 def handle_incoming_webhook(data):
-    # print("Data", data)
     message_data = frappe.parse_json(data)
     msg_sender = message_data.get("from")
     message = message_data.get("body")
@@ -199,14 +162,17 @@ def handle_incoming_webhook(data):
             grp_name = get_grp_name(msg_receiver)
             create_group(msg_receiver, grp_name)
             handle_group_message(msg_receiver, message, sender, timestamp, media, author)
-
     return {"status": "success"}
 
-
-
-
-
-
+def get_profile_photo(id):
+    url = f"{ULTRAMSG_API}/{ULTRAMSG_INSTANCE}/contacts/image"
+    headers = {'content-type': 'application/x-www-form-urlencoded'}
+    querystring = {
+    "token": ULTRAMSG_TOKEN,
+    "chatId": id
+    }
+    response = requests.request("GET", url, headers=headers, params=querystring)
+    return response.json()
 
 def convert_to_local_time(timestamp):    
     utc_time = datetime.datetime.utcfromtimestamp(timestamp)
@@ -222,15 +188,17 @@ def is_valid_number(number):
     except phonenumbers.NumberParseException:
         return False
 
-def create_group(group_id, group_name):
-    existing_group = frappe.db.exists('WhatsApp Group', {'group_id': group_id})
+def create_group(group_id, group_name , pro_photo=None):
+    existing_group = frappe.db.exists('WhatsApp Group', {'id': group_id})
     if existing_group:
-        frappe.db.set_value('WhatsApp Group', existing_group, 'group_name', group_name, update_modified=False)
+        frappe.db.set_value('WhatsApp Group', existing_group, 'id_name', group_name, update_modified=False)
+        frappe.db.set_value('WhatsApp Group', existing_group, 'profile_photo', pro_photo, update_modified=False)
     else:
         doc = frappe.get_doc({
             'doctype': 'WhatsApp Group',
-            'group_name': group_name,
-            'group_id': group_id,
+            'id_name': group_name,
+            'id': group_id,
+            'profile_photo': pro_photo
         })
         doc.flags.ignore_permissions = True
         doc.insert()
@@ -238,7 +206,7 @@ def create_group(group_id, group_name):
 def create_conversation(conversation_id, recipient_name):
     existing_conversation = frappe.db.exists('WhatsApp Conversation', {'conversation_id': conversation_id})
     if not existing_conversation:
-        recipient = frappe.db.get_value('WhatsApp Recipient', {'recipient_id': conversation_id}, 'name')
+        recipient = frappe.db.get_value('WhatsApp Recipient', {'id': conversation_id}, 'id')
         doc = frappe.get_doc({
             'doctype': 'WhatsApp Conversation',
             'recipient': recipient or recipient_name,
@@ -247,19 +215,21 @@ def create_conversation(conversation_id, recipient_name):
         doc.flags.ignore_permissions = True
         doc.insert()
 
-def create_recipient(recipient_id, recipient_name, formatted_number):
-    existing_recipient = frappe.db.exists('WhatsApp Recipient', {'recipient_id': recipient_id})
+def create_recipient(recipient_id, recipient_name, formatted_number , pro_photo=None):
+    existing_recipient = frappe.db.exists('WhatsApp Recipient', {'id': recipient_id})
     if existing_recipient:
-        frappe.db.set_value('WhatsApp Recipient', existing_recipient, 'recipient_name', recipient_name, update_modified=False)
-        conversation = frappe.db.get_value('WhatsApp Conversation', {'recipient': recipient_name}, 'name')
+        frappe.db.set_value('WhatsApp Recipient', existing_recipient, 'id_name', recipient_name, update_modified=False)
+        frappe.db.set_value('WhatsApp Recipient', existing_recipient, 'profile_photo', pro_photo, update_modified=False)
+        conversation = frappe.db.get_value('WhatsApp Conversation', {'recipient': recipient_id}, 'name')
         if conversation:
-            frappe.db.set_value('WhatsApp Conversation', conversation, 'recipient', recipient_name, update_modified=False)
+            frappe.db.set_value('WhatsApp Conversation', conversation, 'recipient', recipient_id, update_modified=False)
     else:
         recipient_doc = frappe.get_doc({
             'doctype': 'WhatsApp Recipient',
-            'recipient_name': recipient_name,
-            'recipient_id': recipient_id,
-            'recipient_number': formatted_number
+            'id_name': recipient_name,
+            'id': recipient_id,
+            'recipient_number': formatted_number,
+            'profile_photo': pro_photo
         })
         recipient_doc.flags.ignore_permissions = True
         recipient_doc.insert()
@@ -304,9 +274,9 @@ def get_grp_name(id):
 
 def handle_group_message(group_id, message, sender, timestamp, media , author):
     readable_time = convert_to_local_time(timestamp)
-    group_record_name = frappe.db.get_value('WhatsApp Group', {'group_id': group_id}, 'name')
+    group_record_name = frappe.db.get_value('WhatsApp Group', {'id': group_id}, 'name')
     if author:
-        author_name = frappe.db.get_value('WhatsApp Recipient', {'recipient_id': author}, 'recipient_name') or None
+        author_name = frappe.db.get_value('WhatsApp Recipient', {'id': author}, 'id') or None
     if not author_name:
         number = author.split("@")[0]
         author_name = '+' + number

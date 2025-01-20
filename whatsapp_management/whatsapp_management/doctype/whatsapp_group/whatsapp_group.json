@@ -6,27 +6,16 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "group_name",
+  "id_name",
+  "profile_photo",
   "column_break_dwww",
-  "group_id",
+  "id",
+  "section_break_nijh",
+  "last_message",
   "section_break_knnl",
   "participants"
  ],
  "fields": [
-  {
-   "fieldname": "group_name",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Group Name",
-   "reqd": 1
-  },
-  {
-   "fieldname": "group_id",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Group ID",
-   "reqd": 1
-  },
   {
    "fieldname": "participants",
    "fieldtype": "Table",
@@ -40,11 +29,40 @@
   {
    "fieldname": "section_break_knnl",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "profile_photo",
+   "fieldtype": "Data",
+   "label": "Profile Photo",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_nijh",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "last_message",
+   "fieldtype": "Text",
+   "label": "Last Message"
+  },
+  {
+   "fieldname": "id_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Group Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Group ID",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-07 18:25:43.707576",
+ "modified": "2025-01-20 12:50:47.539025",
  "modified_by": "Administrator",
  "module": "Whatsapp Management",
  "name": "WhatsApp Group",

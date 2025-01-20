@@ -4,13 +4,13 @@
 frappe.ui.form.on("WhatsApp Group", {
 	refresh(frm) {
         frm.add_custom_button('Sync Messages', function () {
-            if (!frm.doc.group_id) {
+            if (!frm.doc.id) {
                 frappe.throw(__('Group ID is missing. Please check the field.'));
             }
             frappe.call({
                 method: "whatsapp_management.whatsapp_management.apis.api.sync_grp",
                 args:{
-                    group_id: frm.doc.group_id,
+                    group_id: frm.doc.id,
                     name: frm.doc.name
                 },
                 callback: function(r) {

@@ -93,7 +93,7 @@
    "read_only": 1
   },
   {
-   "fetch_from": "whatsapp_group.group_name",
+   "fetch_from": "whatsapp_group.id_name",
    "fieldname": "group_name",
    "fieldtype": "Data",
    "label": "Group Name",
@@ -108,7 +108,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-13 18:30:09.387872",
+ "modified": "2025-01-20 13:39:59.410633",
  "modified_by": "Administrator",
  "module": "Whatsapp Management",
  "name": "WhatsApp Message",
