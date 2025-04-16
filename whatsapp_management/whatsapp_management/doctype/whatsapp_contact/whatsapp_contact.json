@@ -1,0 +1,138 @@
+{
+ "actions": [],
+ "autoname": "field:contact_id",
+ "creation": "2024-12-24 13:50:34.040509",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "contact_id",
+  "contact_name",
+  "contact_title",
+  "column_break_tnnp",
+  "contact_number",
+  "push_name",
+  "image",
+  "check_section",
+  "is_me",
+  "is_group",
+  "is_business",
+  "check_columns",
+  "is_my_contact",
+  "is_blocked",
+  "is_muted"
+ ],
+ "fields": [
+  {
+   "fieldname": "column_break_tnnp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "image",
+   "fieldtype": "Data",
+   "label": "Profile Photo",
+   "read_only": 1
+  },
+  {
+   "fieldname": "push_name",
+   "fieldtype": "Data",
+   "label": "Push Name"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_me",
+   "fieldtype": "Check",
+   "label": "Is Me"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_group",
+   "fieldtype": "Check",
+   "label": "Is Group"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_business",
+   "fieldtype": "Check",
+   "label": "Is Business"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_my_contact",
+   "fieldtype": "Check",
+   "label": "Is My Contact"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_blocked",
+   "fieldtype": "Check",
+   "label": "Is Blocked"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_muted",
+   "fieldtype": "Check",
+   "label": "Is Muted"
+  },
+  {
+   "fieldname": "check_section",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "check_columns",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "contact_id",
+   "fieldtype": "Data",
+   "label": "Contact Id",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "contact_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Contact Name"
+  },
+  {
+   "fieldname": "contact_number",
+   "fieldtype": "Phone",
+   "in_list_view": 1,
+   "label": "Contact Number"
+  },
+  {
+   "fieldname": "contact_title",
+   "fieldtype": "Read Only",
+   "label": "Contact Title",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-03-27 16:46:08.687726",
+ "modified_by": "Administrator",
+ "module": "Whatsapp Management",
+ "name": "WhatsApp Contact",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "search_fields": "contact_title",
+ "show_title_field_in_link": 1,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "contact_title"
+}

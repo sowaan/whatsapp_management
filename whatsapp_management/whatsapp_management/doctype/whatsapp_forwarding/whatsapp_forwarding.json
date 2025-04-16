@@ -1,0 +1,88 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-04-07 10:25:25.111381",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "original_message",
+  "original_sender",
+  "reply_sent",
+  "column_break_nsqv",
+  "forwarded_message",
+  "forwarded_to",
+  "reply_received"
+ ],
+ "fields": [
+  {
+   "fieldname": "original_message",
+   "fieldtype": "Link",
+   "label": "Original Message",
+   "options": "WhatsApp Message"
+  },
+  {
+   "fieldname": "column_break_nsqv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "original_message.message_from",
+   "fieldname": "original_sender",
+   "fieldtype": "Link",
+   "label": "Original Sender",
+   "options": "WhatsApp Contact",
+   "read_only": 1
+  },
+  {
+   "fieldname": "forwarded_message",
+   "fieldtype": "Link",
+   "label": "Forwarded Message",
+   "options": "WhatsApp Message"
+  },
+  {
+   "fetch_from": "forwarded_message.message_to",
+   "fieldname": "forwarded_to",
+   "fieldtype": "Link",
+   "label": "Forwarded To",
+   "options": "WhatsApp Contact",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "description": "Reply received from manager?",
+   "fieldname": "reply_received",
+   "fieldtype": "Check",
+   "label": "Reply Received"
+  },
+  {
+   "default": "0",
+   "description": "Reply sent to original sender?",
+   "fieldname": "reply_sent",
+   "fieldtype": "Check",
+   "label": "Reply Sent"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-04-07 10:44:11.412210",
+ "modified_by": "Administrator",
+ "module": "Whatsapp Management",
+ "name": "WhatsApp Forwarding",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

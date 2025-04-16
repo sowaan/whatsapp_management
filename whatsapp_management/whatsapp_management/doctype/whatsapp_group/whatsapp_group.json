@@ -9,6 +9,7 @@
   "id_name",
   "profile_photo",
   "column_break_dwww",
+  "group_owner",
   "id",
   "section_break_nijh",
   "last_message",
@@ -58,11 +59,17 @@
    "in_list_view": 1,
    "label": "Group ID",
    "reqd": 1
+  },
+  {
+   "fieldname": "group_owner",
+   "fieldtype": "Link",
+   "label": "Group Owner",
+   "options": "WhatsApp Contact"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-20 12:50:47.539025",
+ "modified": "2025-03-27 15:57:59.275559",
  "modified_by": "Administrator",
  "module": "Whatsapp Management",
  "name": "WhatsApp Group",
