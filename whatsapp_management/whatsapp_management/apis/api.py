@@ -71,10 +71,7 @@ def parse_incoming_message(data):
 
 @frappe.whitelist(allow_guest=True)
 def handle_incoming_webhook(data=None):
-	# print(f"\n_____________________data: {data}_______________________________\n")
-
 	incoming_message = parse_incoming_message(data)
-	print(f"\n_____________________parsed data: {incoming_message}_______________________________\n")
 
 	sender_contact = get_contact_from_ultramsg(incoming_message.msg_sender)
 
@@ -187,7 +184,6 @@ def save_message_data(message_to_save):
 	# )
 
 	if existing_message:
-		print("\n----------------------updating----------------------------\n")
 		# Update the existing document
 		doc = frappe.get_doc("WhatsApp Message", existing_message)
 
@@ -199,7 +195,6 @@ def save_message_data(message_to_save):
 		if message_to_save.file_name:
 			doc.file_name = message_to_save.file_name
 
-		# print(f"\n***********************quoted message: {message_to_save.quoted_message_id}*******************************\n")
 		if message_to_save.quoted_message_id:
 			doc.quoted_message = message_to_save.quoted_message_id
 
@@ -207,8 +202,6 @@ def save_message_data(message_to_save):
 		frappe.db.commit()
 
 	else:
-		# print(f"\n================inserting record===============\n")
-		# print(f"\n***********************quoted message: {message_to_save.quoted_message_id}*******************************\n")
 		# Insert a new document
 		doc = frappe.get_doc(
 			{
@@ -279,9 +272,6 @@ def send_reply_to_group(message_to_save: IncomingMessage):
 		msg_body=message_to_save.message_body,
 		quotedMsg=original_message["message_id"],
 	)
-	# print(f"*****************************************************************\n")
-	# print(f"original messagge: {original_message}\n")
-	# print(f"msg_body: {message_to_save.message_body}\n")
 
 	return
 
@@ -460,7 +450,7 @@ def send_to_client_group(message_to_save: IncomingMessage, message_body):
 	)
 
 	if not group_mappings:
-		print("\n\n================no mapping===================\n\n")
+		frappe.log_error("No mapping defined in Whatsapp Group Mapping")
 		return None
 
 	# get previous message from quoted_message
@@ -472,7 +462,7 @@ def send_to_client_group(message_to_save: IncomingMessage, message_body):
 	)
 
 	if not message_from_me:
-		print("\n\n================message form me not found===================\n\n")
+		frappe.log_error("Quoted message not found.")
 		return
 
 	original_message = frappe.get_value(
@@ -483,7 +473,7 @@ def send_to_client_group(message_to_save: IncomingMessage, message_body):
 	)
 
 	if not original_message:
-		print("\n\n================original message not found==================\n\n")
+		frappe.log_error("Original client message not found")
 		return
 
 	for mapping in group_mappings:
@@ -493,10 +483,9 @@ def send_to_client_group(message_to_save: IncomingMessage, message_body):
 		)
 
 		if not existing_contact:
-			print("\n\n================contact not found===================\n\n")
+			frappe.log_error("Contact defined in mapping not found")
 			continue
 
-		print(f"\n\n================sending to client {message_to_save.type}===================\n\n")
 		if message_to_save.type == "image":
 			send_ultramsg_image(
 				msg_to=existing_contact,
@@ -541,7 +530,6 @@ def on_forward_to_support_group(message_to_save: IncomingMessage):
 
 def on_forward_to_client_group(message_to_save: IncomingMessage):
 	"""Set status when reply is sent back to client."""
-	# print(f"\n\n *********reply to client********\n")
 	message_to_save.message_type = REPLY_TO_CLIENT
 	save_message_data(message_to_save=message_to_save)
 	return
@@ -550,7 +538,6 @@ def on_forward_to_client_group(message_to_save: IncomingMessage):
 def on_unidentified_message(message_to_save: IncomingMessage):
 	"""Set status when an Unidentified message is received."""
 	message_to_save.message_type = UNIDENTIFIED_MESSAGE
-	print("\n************************undefined message*****************************")
 	save_message_data(message_to_save=message_to_save)
 
 
@@ -589,8 +576,9 @@ def sync_contacts_enque():
 		for idx, contact in enumerate(contacts):
 			create_contact(contact)
 
-			if contact.get("isGroup"):
-				create_group_participant(contact)
+			# for now, i am disabling group participants, may be we need this later
+			# if contact.get("isGroup"):
+			# 	create_group_participant(contact)
 
 			if idx % 50 == 0:
 				frappe.db.commit()
@@ -653,6 +641,23 @@ def create_contact(contact):
 			}
 		)
 		doc.insert(ignore_permissions=True)
+	else:
+		doc = frappe.get_doc("WhatsApp Contact", existing_contact)
+		updated = False
+
+		if doc.contact_name != name:
+			doc.contact_name = name
+			updated = True
+		if doc.push_name != pushname:
+			doc.push_name = pushname
+			updated = True
+		if doc.contact_title != contactTitle:
+			doc.contact_title = contactTitle
+			updated = True
+
+		# Optional: update other fields if needed
+		if updated:
+			doc.save(ignore_permissions=True)
 
 
 def create_group_participant(contact):
@@ -731,8 +736,6 @@ def sync_conversations():
 	response = requests.request("GET", url, headers=headers, params=querystring)
 
 	for record in response.json():
-		# print('------------------- chalo --------------------------------')
-
 		idVar = record.get("id")
 
 		profile = get_profile_photo(idVar)
@@ -754,7 +757,6 @@ def sync_conversations():
 					formatted_number = f"+{parsed_number.country_code}-{parsed_number.national_number}"
 					create_recipient(recipient_id, recipient_name, formatted_number, pro_photo)
 					create_conversation(recipient_id, recipient_name)
-	print("Synced Conversations")
 
 
 @frappe.whitelist()
@@ -1018,7 +1020,6 @@ def on_forward_to_managers(message_to_save: IncomingMessage):
 def on_REPLY_FROM_SUPPORT(message_to_save: IncomingMessage):
 	"""Set status when manager replies."""
 	message_to_save.message_type = REPLY_FROM_SUPPORT
-	# print(f"\n\n *********reply received from manager********\n")
 
 	save_message_data(message_to_save=message_to_save)
 
@@ -1028,7 +1029,6 @@ def on_REPLY_FROM_SUPPORT(message_to_save: IncomingMessage):
 
 def on_reply_to_client(message_to_save: IncomingMessage):
 	"""Set status when reply is sent back to client."""
-	# print(f"\n\n *********reply to client********\n")
 	message_to_save.message_type = REPLY_TO_CLIENT
 	save_message_data(message_to_save=message_to_save)
 	return
