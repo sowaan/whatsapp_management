@@ -8,7 +8,7 @@ frappe.ui.form.on("WhatsApp Contact", {
 				method: "whatsapp_management.whatsapp_management.apis.api.sync_contacts",
 				callback: function (r) {
 					if (r.message) {
-						frappe.msgprint(__("Contacts Synced Successfully!"));
+						frappe.msgprint(__(r.message));
 						frm.reload_doc(); // Reload the document
 					}
 				},
