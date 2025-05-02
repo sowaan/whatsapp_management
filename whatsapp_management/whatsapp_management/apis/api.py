@@ -4,9 +4,11 @@ import frappe
 import phonenumbers
 import pytz
 import requests
+from frappe import enqueue
 
 wa_settings = frappe.get_doc("WhatsApp Settings")
-ULTRAMSG_API = wa_settings.api_url
+# ULTRAMSG_API = wa_settings.api_url
+ULTRAMSG_API = wa_settings.api_url.rstrip("/")
 ULTRAMSG_INSTANCE = wa_settings.instance_id
 ULTRAMSG_TOKEN = wa_settings.token
 TIMEZONE = frappe.db.get_single_value("System Settings", "time_zone")
@@ -72,7 +74,7 @@ def handle_incoming_webhook(data=None):
 	# print(f"\n_____________________data: {data}_______________________________\n")
 
 	incoming_message = parse_incoming_message(data)
-	# print(f"\n_____________________parsed data: {incoming_message}_______________________________\n")
+	print(f"\n_____________________parsed data: {incoming_message}_______________________________\n")
 
 	sender_contact = get_contact_from_ultramsg(incoming_message.msg_sender)
 
@@ -565,7 +567,12 @@ def get_contact_from_ultramsg(contact_id):
 
 @frappe.whitelist()
 def sync_contacts():
-	# Amir Baloch Created To sync Contacts
+	enqueue("whatsapp_management.whatsapp_management.apis.api.sync_contacts_enque")
+	# enqueue(sync_contacts_enque)
+	return "Contact sync has been queued."
+
+
+def sync_contacts_enque():
 	"""Fetch contacts from UltraMsg API and sync with Frappe."""
 	url = f"{ULTRAMSG_API}/{ULTRAMSG_INSTANCE}/contacts"
 	headers = {"content-type": "application/json"}
@@ -577,12 +584,20 @@ def sync_contacts():
 
 		contacts = response.json()  # Extract contact list
 
-		for contact in contacts:
+		frappe.log_error(f"About to sync contacts at [{datetime.datetime.now().isoformat()}]")
+
+		for idx, contact in enumerate(contacts):
 			create_contact(contact)
+
 			if contact.get("isGroup"):
 				create_group_participant(contact)
 
+			if idx % 50 == 0:
+				frappe.db.commit()
+
 		frappe.db.commit()  # Commit changes
+
+		frappe.log_error(f"Contacts Synced Successfully! [{datetime.datetime.now().isoformat()}]")
 		return "Contacts Synced Successfully!"
 
 	except requests.exceptions.RequestException as e:
@@ -591,6 +606,10 @@ def sync_contacts():
 
 
 def create_contact(contact):
+	if not isinstance(contact, dict):
+		frappe.throw(f"Something went wrong.\nInvalid contact format:\n{contact}")
+		return  # This line won't be reached due to frappe.throw(), but it's good practice
+
 	contact_id = contact.get("id")  # Ensure this field exists
 	name = contact.get("name", "Unknown Contact")
 
@@ -613,27 +632,9 @@ def create_contact(contact):
 	# Check if contact already exists
 	existing_contact = frappe.get_value("WhatsApp Contact", {"contact_id": contact_id}, "name")
 
-	# Check if contact_id already exists in Frappe
-	if existing_contact:
-		frappe.db.set_value(
-			"WhatsApp Contact",
-			existing_contact,
-			{
-				"contact_name": name,
-				"contact_number": number,
-				"push_name": pushname,
-				"is_me": isMe,
-				"is_group": isGroup,
-				"is_business": isBusiness,
-				"is_my_contact": isMyContact,
-				"is_blocked": isBlocked,
-				"is_muted": isMuted,
-				"contact_title": contactTitle,
-			},
-		)
-	else:
-		profile = get_profile_photo(contact_id)
-		image = profile.get("success")
+	if not existing_contact:
+		# profile = get_profile_photo(contact_id)
+		# image = profile.get("success")
 		doc = frappe.get_doc(
 			{
 				"doctype": "WhatsApp Contact",
@@ -648,7 +649,7 @@ def create_contact(contact):
 				"is_blocked": isBlocked,
 				"is_muted": isMuted,
 				"contact_title": contactTitle,
-				"image": image,
+				# "image": image,
 			}
 		)
 		doc.insert(ignore_permissions=True)
@@ -678,16 +679,7 @@ def create_group_participant(contact):
 			)
 
 			# Check if contact_id already exists in Frappe
-			if existing_participant:
-				frappe.db.set_value(
-					"WhatsApp Group Participant",
-					existing_participant,
-					{
-						"is_admin": participant.get("isAdmin"),
-						"is_super_admin": participant.get("isSuperAdmin"),
-					},
-				)
-			else:
+			if not existing_participant:
 				doc = frappe.get_doc(
 					{
 						"doctype": "WhatsApp Group Participant",
